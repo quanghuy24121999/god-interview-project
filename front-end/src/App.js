@@ -5,7 +5,7 @@ import RecipeDetail from './components/RecipeDetail'
 export default function App() {
 
   return (
-    // <ListRecipes />
-    <RecipeDetail />
+    <ListRecipes />
+    // <RecipeDetail />
   )
 }

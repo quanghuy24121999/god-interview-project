@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Dropdown } from 'react-bootstrap'
+import { Table, Form, Button } from 'react-bootstrap'
 
 export default function ListRecipes() {
     const [recipes, setRecipes] = useState([])
@@ -37,35 +37,25 @@ export default function ListRecipes() {
     }, [])
 
     return (
-        <div>
+        <div className='list-recipes'>
             <h1 className='title'>Recipe list</h1>
-            <div className='search-component'>
-                <Dropdown className='cuisine-search'>
-                    <Dropdown.Toggle id="dropdown-basic">
-                        Choose a cuisine
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        {
-                            cuisines.map((cuisine, index) => (
-                                <Dropdown.Item key={index}>{cuisine.name}</Dropdown.Item>
-                            ))
-                        }
-                    </Dropdown.Menu>
-                </Dropdown>
-
-                <Dropdown>
-                    <Dropdown.Toggle id="dropdown-basic">
-                        Choose an ingredient
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        {
-                            ingredients.map((ingredient, index) => (
-                                <Dropdown.Item key={index}>{ingredient.name}</Dropdown.Item>
-                            ))
-                        }
-                    </Dropdown.Menu>
-                </Dropdown>
-            </div>
+            <Form className='search-component'>
+                <Form.Select className='select' aria-label="Choose a cuisine">
+                    {
+                        cuisines.map((cuisine, index) => (
+                            <option key={index}>{cuisine.name}</option>
+                        ))
+                    }
+                </Form.Select>
+                <Form.Select className='select' aria-label="Choose a cuisine">
+                    {
+                        ingredients.map((ingredient, index) => (
+                            <option key={index}>{ingredient.name}</option>
+                        ))
+                    }
+                </Form.Select>
+                <Button>Search</Button>
+            </Form>
             <Table striped bordered hover className='recipe-table'>
                 <thead>
                     <tr>
