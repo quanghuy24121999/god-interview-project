@@ -4,7 +4,7 @@ const app = express()
 
 const PAGE_SIZE = 5
 
-app.get("/recipes-search", (req, res) => {
+app.get("/recipes", (req, res) => {
     let totalRow
     let cuisineId = req.query.cuisineId
     let ingredient = req.query.ingredient
