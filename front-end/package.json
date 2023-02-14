@@ -1,6 +1,7 @@
 {
   "name": "front-end",
   "version": "0.1.0",
+  "homepage": ".",
   "proxy": "https://god-interview-project-back-end.vercel.app/",
   "private": true,
   "dependencies": {
