@@ -1,195 +1,62 @@
 const express = require('express')
+const pool = require('./database')
 const app = express()
 
-app.get("/recipes", (req, res) => {
-    res.json(
-        [
-            {
-                id: 1,
-                image: "image-link",
-                name: "name 1",
-                ingredients: [
-                    {
-                        id: 1,
-                        name: "name1"
-                    },
-                    {
-                        id: 3,
-                        name: "name3"
-                    },
-                    {
-                        id: 6,
-                        name: "name6"
-                    }
-                ],
-                step: "Step by step",
-                cuisine: {
-                    id: 1,
-                    name: "Vietnamese cuisine"
-                }
-            },
-            {
-                id: 1,
-                image: "image-link",
-                name: "name 1",
-                ingredients: [
-                    {
-                        id: 1,
-                        name: "name1"
-                    },
-                    {
-                        id: 3,
-                        name: "name3"
-                    },
-                    {
-                        id: 6,
-                        name: "name6"
-                    }
-                ],
-                step: "Step by step",
-                cuisine: {
-                    id: 1,
-                    name: "Vietnamese cuisine"
-                }
-            },
-            {
-                id: 1,
-                image: "image-link",
-                name: "name 1",
-                ingredients: [
-                    {
-                        id: 1,
-                        name: "name1"
-                    },
-                    {
-                        id: 3,
-                        name: "name3"
-                    },
-                    {
-                        id: 6,
-                        name: "name6"
-                    }
-                ],
-                step: "Step by step",
-                cuisine: {
-                    id: 1,
-                    name: "Vietnamese cuisine"
-                }
-            },
-            {
-                id: 1,
-                image: "image-link",
-                name: "name 1",
-                ingredients: [
-                    {
-                        id: 1,
-                        name: "name1"
-                    },
-                    {
-                        id: 3,
-                        name: "name3"
-                    },
-                    {
-                        id: 6,
-                        name: "name6"
-                    }
-                ],
-                step: "Step by step",
-                cuisine: {
-                    id: 1,
-                    name: "Vietnamese cuisine"
-                }
-            },
-            {
-                id: 1,
-                image: "image-link",
-                name: "name 1",
-                ingredients: [
-                    {
-                        id: 1,
-                        name: "name1"
-                    },
-                    {
-                        id: 3,
-                        name: "name3"
-                    },
-                    {
-                        id: 6,
-                        name: "name6"
-                    }
-                ],
-                step: "Step by step",
-                cuisine: {
-                    id: 1,
-                    name: "Vietnamese cuisine"
-                }
-            },
-            {
-                id: 1,
-                image: "image-link",
-                name: "name 1",
-                ingredients: [
-                    {
-                        id: 1,
-                        name: "name1"
-                    },
-                    {
-                        id: 3,
-                        name: "name3"
-                    },
-                    {
-                        id: 6,
-                        name: "name6"
-                    }
-                ],
-                step: "Step by step",
-                cuisine: {
-                    id: 1,
-                    name: "Vietnamese cuisine"
-                }
+const PAGE_SIZE = 5
+
+app.get("/recipes-search", (req, res) => {
+    let totalRow
+    let cuisineId = req.query.cuisineId
+    let ingredient = req.query.ingredient
+    let page = req.query.page
+
+    // console.log("cuisineId: " + cuisineId);
+    let query = "SELECT dishes.name AS dishName, cuisines.name as cuisineName, ingredients.name AS ingredientName FROM dishes"
+        + "\nINNER JOIN cuisines ON cuisines.id = dishes.cuisineId"
+        + "\nINNER JOIN recipes ON recipes.dishId = dishes.id"
+        + "\nINNER JOIN ingredients ON ingredients.id = recipes.ingredientId"
+    if (parseInt(cuisineId) !== 0) {
+        query += "\nWHERE dishes.cuisineId = " + cuisineId + " AND ingredients.name LIKE '%" + ingredient + "%'"
+    } else if (parseInt(cuisineId) === 0) {
+        query += "\nWHERE ingredients.name LIKE '%" + ingredient + "%'"
+    }
+    query += "\nGROUP BY dishes.name"
+    // console.log(query);
+    pool.query(query, (err, response) => {
+        if (err) console.log("Query recipes error");
+        totalRow = response.length
+
+        if (page) {
+            page = parseInt(page)
+            if (page < 1) {
+                page = 1
             }
-        ]
-    )
+            let skip = (page - 1) * PAGE_SIZE
+            pool.query(query + " limit " + skip + ", " + PAGE_SIZE, (err, response) => {
+                if (err) console.log("Query recipes error");
+                res.json({
+                    totalPage: Math.ceil(totalRow / PAGE_SIZE),
+                    data: response
+                })
+            })
+        } else {
+            pool.query(query, (err, response) => {
+                if (err) console.log("Query recipes error");
+                res.json({
+                    totalPage: Math.ceil(totalRow / PAGE_SIZE),
+                    data: response
+                })
+            })
+        }
+    })
+    // }
 })
 
 app.get("/cuisines", (req, res) => {
-    res.json(
-        [
-            {
-                id: 1,
-                name: "cuisine 1"
-            },
-            {
-                id: 2,
-                name: "cuisine 2"
-            },
-            {
-                id: 3,
-                name: "cuisine 3"
-            }
-        ]
-    )
+    pool.query('select * from cuisines', (err, response) => {
+        res.json(response)
+    })
 })
-
-app.get("/ingredients", (req, res) => {
-    res.json(
-        [
-            {
-                id: 1,
-                name: "intredient 1"
-            },
-            {
-                id: 2,
-                name: "intredient 2"
-            },
-            {
-                id: 3,
-                name: "intredient 3"
-            }
-        ]
-    )
-})
-
 
 app.listen(5000, () => {
     console.log("Server started on port 5000");

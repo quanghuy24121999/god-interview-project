@@ -11,18 +11,30 @@
 }
 
 .recipe-table,
-.recipe-table {
+.recipe-table,
+.pagination-container {
     margin: 0 auto;
     margin-top: 20px;
     width: 70%;
 }
 
-.select {
+.pagination-container {
+    display: flex;
+    justify-content: center;
+}
+
+.select,
+.input-ingredient {
     width: 200px;
     margin: 0 10px;
 }
 
-.recipe-detail{
+.no-data {
+    text-align: center;
+    padding: 30px;
+}
+
+.recipe-detail {
     width: 80%;
     margin: auto;
     padding: 10px;
@@ -33,8 +45,8 @@
 
 .list-recipes {
     width: 80%;
-    margin: 80px auto;
-    padding: 100px 20px;
+    margin: auto;
+    padding: 50px 20px;
     background: rgb(255, 255, 255);
     border-radius: 10px;
     box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1);

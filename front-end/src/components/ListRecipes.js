@@ -1,30 +1,45 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Form, Button } from 'react-bootstrap'
+import { Table, Form, Button, Pagination } from 'react-bootstrap'
 
 export default function ListRecipes() {
     const [recipes, setRecipes] = useState([])
-    const [ingredients, setIngredients] = useState([])
     const [cuisines, setCuisines] = useState([])
+    const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState([]);
+    const [cuisine, setCuisine] = useState(0)
+    const [ingredient, setIngredient] = useState("")
 
     useEffect(() => {
-        fetch("/recipes").then(
+        fetch(`/recipes-search?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
             response => response.json()
         ).then(
             data => {
-                setRecipes(data)
+                console.log(data.data);
+                setRecipes(data.data)
+                let arr = []
+                for (let i = 1; i < data.totalPage + 1; i++) {
+                    arr.push(i);
+                }
+                setTotalPage(arr)
             }
         )
-    }, [])
+    }, [page])
 
-    useEffect(() => {
-        fetch("/ingredients").then(
+    function search() {
+        setPage(1)
+        fetch(`/recipes-search?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
             response => response.json()
         ).then(
             data => {
-                setIngredients(data)
+                setRecipes(data.data)
+                let arr = []
+                for (let i = 1; i < data.totalPage + 1; i++) {
+                    arr.push(i);
+                }
+                setTotalPage(arr)
             }
         )
-    }, [])
+    }
 
     useEffect(() => {
         fetch("/cuisines").then(
@@ -39,22 +54,32 @@ export default function ListRecipes() {
     return (
         <div className='list-recipes'>
             <h1 className='title'>Recipe list</h1>
-            <Form className='search-component'>
-                <Form.Select className='select' aria-label="Choose a cuisine">
+            <Form className='search-component' onSubmit={(e) => {
+                e.preventDefault();
+                search();
+            }}>
+                <Form.Select className='select' aria-label="Choose a cuisine" value={cuisine} onChange={(e) => {
+                    e.preventDefault();
+                    setCuisine(e.target.value)
+                }}>
+                    <option value={0}>Choose a cuisine</option>
                     {
                         cuisines.map((cuisine, index) => (
-                            <option key={index}>{cuisine.name}</option>
+                            <option key={index} value={cuisine.id}>{cuisine.name}</option>
                         ))
                     }
                 </Form.Select>
-                <Form.Select className='select' aria-label="Choose a cuisine">
-                    {
-                        ingredients.map((ingredient, index) => (
-                            <option key={index}>{ingredient.name}</option>
-                        ))
-                    }
-                </Form.Select>
-                <Button>Search</Button>
+                <Form.Control
+                    className='input-ingredient'
+                    type="text"
+                    placeholder="Ingredient"
+                    value={ingredient}
+                    onChange={(e) => {
+                        e.preventDefault();
+                        setIngredient(e.target.value)
+                    }}
+                />
+                <Button type='submit'>Search</Button>
             </Form>
             <Table striped bordered hover className='recipe-table'>
                 <thead>
@@ -62,22 +87,54 @@ export default function ListRecipes() {
                         <th>#</th>
                         <th>Recipe name</th>
                         <th>Cuisine</th>
+                        {/* {
+                            isHasIngredient == true && <th>Ingredient name</th>
+                        } */}
+                        <th>Ingredient name</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
+                {
+                    recipes.length > 0 ? <tbody>
+                        {
+                            recipes.map((recipe, index) => (
+                                <tr className='recipe' key={index}>
+                                    <td><b>{index + 1}</b></td>
+                                    <td>{recipe.dishName}</td>
+                                    <td>{recipe.cuisineName}</td>
+                                    {/* {
+                                    isHasIngredient == true && <td>{recipe.ingredientName}</td>
+                                } */}
+                                    <td>{recipe.ingredientName}</td>
+                                    <td><a href='#'>Detail</a></td>
+                                </tr>
+                            ))
+                        }
+                    </tbody> : <tbody>
+                        <tr>
+                            <td colSpan={5}>
+                                <p className="no-data">No data !</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+            </Table>
+            {
+                recipes.length > 0 && <Pagination className='pagination-container'>
+                    <Pagination.First onClick={(e) => { e.preventDefault(); setPage(1); }} />
                     {
-                        recipes.map((recipe, index) => (
-                            <tr className='recipe' key={index}>
-                                <td>{index}</td>
-                                <td>{recipe.name}</td>
-                                <td>{recipe.cuisine.name}</td>
-                                <td><a href='#'>Detail</a></td>
-                            </tr>
+                        totalPage.map(page => (
+                            <Pagination.Item key={page}
+                                onClick={(e) => { e.preventDefault(); setPage(page); }}
+                            >
+                                {page}
+                            </Pagination.Item>
                         ))
                     }
-                </tbody>
-            </Table>
+                    <Pagination.Last onClick={(e) => { e.preventDefault(); setPage(totalPage.length); }} />
+                </Pagination>
+            }
+
         </div >
     )
 }
