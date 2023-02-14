@@ -128,7 +128,6 @@ export default function ListRecipes() {
             </Table>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    {/* <Modal.Title className='modal-title'>{recipe.dishName}</Modal.Title> */}
                 </Modal.Header>
                 <Modal.Body>
                     <RecipeDetail recipeProp={recipe} />
