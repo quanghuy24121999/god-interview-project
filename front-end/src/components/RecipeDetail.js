@@ -1,41 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, Table } from 'react-bootstrap'
 
-export default function RecipeDetail() {
-    const [recipe, setRecipe] = useState(
-        {
-            "id": 1,
-            "image": "image-link",
-            "name": "name 1",
-            "ingredients": [
-                {
-                    "id": 1,
-                    "name": "name1"
-                },
-                {
-                    "id": 3,
-                    "name": "name3"
-                },
-                {
-                    "id": 6,
-                    "name": "name6"
-                }
-            ],
-            "step": "Step by step",
-            "cuisine": {
-                "id": 1,
-                "name": "Vietnamese cuisine"
+export default function RecipeDetail({ recipeProp }) {
+    const recipe = recipeProp
+    const [ingredients, setIngredients] = useState([])
+
+    useEffect(() => {
+        fetch(`/getIngredientByDishId?dishId=${recipe.id}`).then(
+            response => response.json()
+        ).then(
+            data => {
+                setIngredients(data)
             }
-        }
-    )
+        )
+    }, [])
 
     return (
         <div className='recipe-detail'>
-            <h1 className='title'>{recipe.name}</h1>
-            <Image className='recipe-image' src='https://picsum.photos/200' alt='' width={200} height={200} />
-            <div className='recipe-cuisine'>Cuisine: {recipe.cuisine.name}</div>
+            <h1 className='title'>{recipe.dishName}</h1>
+            <h5 className='recipe-cuisine'>({recipe.cuisineName})</h5>
+            <Image className='recipe-image' src={`${recipe.image}`} alt='' width={300} height={300} />
             <div className='recipe-ingredient'>
-                <h4>Ingredients</h4>
                 <Table striped bordered hover className='recipe-table'>
                     <thead>
                         <tr>
@@ -45,9 +30,9 @@ export default function RecipeDetail() {
                     </thead>
                     <tbody>
                         {
-                            recipe.ingredients.map((ingredient, index) => (
+                            ingredients.map((ingredient, index) => (
                                 <tr className='recipe' key={index}>
-                                    <td>{index}</td>
+                                    <td><b>{index + 1}</b></td>
                                     <td>{ingredient.name}</td>
                                 </tr>
                             ))
@@ -55,7 +40,11 @@ export default function RecipeDetail() {
                     </tbody>
                 </Table>
             </div>
-            <div className='recipe-step'>{recipe.step}</div>
+            <div className='recipe-step'>
+                <h4>Instruction</h4>
+                <hr/>
+                {recipe.instruction}
+            </div>
         </div>
     )
 }

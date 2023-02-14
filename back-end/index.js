@@ -4,14 +4,15 @@ const app = express()
 
 const PAGE_SIZE = 5
 
-app.get("/recipes-search", (req, res) => {
+app.get("/recipes", (req, res) => {
     let totalRow
     let cuisineId = req.query.cuisineId
     let ingredient = req.query.ingredient
     let page = req.query.page
 
     // console.log("cuisineId: " + cuisineId);
-    let query = "SELECT dishes.name AS dishName, cuisines.name as cuisineName, ingredients.name AS ingredientName FROM dishes"
+    let query = "SELECT dishes.id, dishes.name AS dishName, cuisines.name as cuisineName, "
+        + "ingredients.name AS ingredientName, dishes.image, dishes.instruction FROM dishes"
         + "\nINNER JOIN cuisines ON cuisines.id = dishes.cuisineId"
         + "\nINNER JOIN recipes ON recipes.dishId = dishes.id"
         + "\nINNER JOIN ingredients ON ingredients.id = recipes.ingredientId"
@@ -54,8 +55,19 @@ app.get("/recipes-search", (req, res) => {
 
 app.get("/cuisines", (req, res) => {
     pool.query('select * from cuisines', (err, response) => {
+        if (err) console.log("Query cuisines error")
         res.json(response)
     })
+})
+
+app.get("/getIngredientByDishId", (req, res) => {
+    pool.query('SELECT ingredients.name FROM recipes'
+        + '\nINNER JOIN ingredients ON ingredients.id = recipes.ingredientId'
+        + '\nINNER JOIN dishes ON dishes.id = recipes.dishId'
+        + '\nWHERE dishes.id = ' + req.query.dishId, (err, response) => {
+            if (err) console.log("Query getIngredientByDishId error")
+            res.json(response)
+        })
 })
 
 app.listen(5000, () => {

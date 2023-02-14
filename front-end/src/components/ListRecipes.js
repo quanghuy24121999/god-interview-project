@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Form, Button, Pagination } from 'react-bootstrap'
+import { Table, Form, Button, Pagination, Modal } from 'react-bootstrap'
+import RecipeDetail from './RecipeDetail'
 
 export default function ListRecipes() {
     const [recipes, setRecipes] = useState([])
@@ -9,12 +10,16 @@ export default function ListRecipes() {
     const [cuisine, setCuisine] = useState(0)
     const [ingredient, setIngredient] = useState("")
 
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const [recipe, setRecipe] = useState({})
+
     useEffect(() => {
-        fetch(`/recipes-search?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
+        fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
             response => response.json()
         ).then(
             data => {
-                console.log(data.data);
                 setRecipes(data.data)
                 let arr = []
                 for (let i = 1; i < data.totalPage + 1; i++) {
@@ -27,7 +32,7 @@ export default function ListRecipes() {
 
     function search() {
         setPage(1)
-        fetch(`/recipes-search?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
+        fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
             response => response.json()
         ).then(
             data => {
@@ -87,9 +92,6 @@ export default function ListRecipes() {
                         <th>#</th>
                         <th>Recipe name</th>
                         <th>Cuisine</th>
-                        {/* {
-                            isHasIngredient == true && <th>Ingredient name</th>
-                        } */}
                         <th>Ingredient name</th>
                         <th></th>
                     </tr>
@@ -102,11 +104,16 @@ export default function ListRecipes() {
                                     <td><b>{index + 1}</b></td>
                                     <td>{recipe.dishName}</td>
                                     <td>{recipe.cuisineName}</td>
-                                    {/* {
-                                    isHasIngredient == true && <td>{recipe.ingredientName}</td>
-                                } */}
                                     <td>{recipe.ingredientName}</td>
-                                    <td><a href='#'>Detail</a></td>
+                                    <td>
+                                        <Button variant="primary" onClick={(e) => {
+                                            e.preventDefault();
+                                            handleShow()
+                                            setRecipe(recipe)
+                                        }}>
+                                            Detail
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))
                         }
@@ -119,6 +126,19 @@ export default function ListRecipes() {
                     </tbody>
                 }
             </Table>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    {/* <Modal.Title className='modal-title'>{recipe.dishName}</Modal.Title> */}
+                </Modal.Header>
+                <Modal.Body>
+                    <RecipeDetail recipeProp={recipe} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             {
                 recipes.length > 0 && <Pagination className='pagination-container'>
                     <Pagination.First onClick={(e) => { e.preventDefault(); setPage(1); }} />
