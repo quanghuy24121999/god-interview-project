@@ -4,7 +4,7 @@ const app = express()
 
 const PAGE_SIZE = 5
 
-app.get("/recipes", (req, res) => {
+app.get("/recipes-search", (req, res) => {
     let totalRow
     let cuisineId = req.query.cuisineId
     let ingredient = req.query.ingredient
@@ -55,7 +55,7 @@ app.get("/recipes", (req, res) => {
 
 app.get("/cuisines", (req, res) => {
     pool.query('select * from cuisines', (err, response) => {
-        if (err) console.log("Query cuisines error")
+        if (err) console.log("Query getIngredientByDishId error")
         res.json(response)
     })
 })
