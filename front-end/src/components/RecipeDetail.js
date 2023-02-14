@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Table } from 'react-bootstrap'
 
+const URL = 'https://god-interview-project-back-end.vercel.app'
+
 export default function RecipeDetail({ recipeProp }) {
     const recipe = recipeProp
     const [ingredients, setIngredients] = useState([])
 
     useEffect(() => {
-        fetch(`/getIngredientByDishId?dishId=${recipe.id}`).then(
+        fetch(`${URL}/getIngredientByDishId?dishId=${recipe.id}`).then(
             response => response.json()
         ).then(
             data => {
@@ -42,7 +44,7 @@ export default function RecipeDetail({ recipeProp }) {
             </div>
             <div className='recipe-step'>
                 <h4>Instruction</h4>
-                <hr/>
+                <hr />
                 {recipe.instruction}
             </div>
         </div>

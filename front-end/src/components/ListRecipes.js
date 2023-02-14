@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Table, Form, Button, Pagination, Modal } from 'react-bootstrap'
 import RecipeDetail from './RecipeDetail'
 
+const URL = 'https://god-interview-project-back-end.vercel.app'
+
 export default function ListRecipes() {
     const [recipes, setRecipes] = useState([])
     const [cuisines, setCuisines] = useState([])
@@ -16,7 +18,7 @@ export default function ListRecipes() {
     const [recipe, setRecipe] = useState({})
 
     useEffect(() => {
-        fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
+        fetch(`${URL}/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
             response => response.json()
         ).then(
             data => {
@@ -32,7 +34,7 @@ export default function ListRecipes() {
 
     function search() {
         setPage(1)
-        fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
+        fetch(`${URL}/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
             response => response.json()
         ).then(
             data => {
@@ -47,7 +49,7 @@ export default function ListRecipes() {
     }
 
     useEffect(() => {
-        fetch("/cuisines").then(
+        fetch(`${URL}/cuisines`).then(
             response => response.json()
         ).then(
             data => {
