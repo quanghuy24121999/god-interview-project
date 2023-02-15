@@ -1,18 +1,33 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Table } from 'react-bootstrap'
+import axios from 'axios'
+
+const url = "https://god-interview-project-back-end.vercel.app"
+// const url = "http://localhost:5000"
+const api = axios.create({
+    baseURL: url,
+    withCredentials: true, // This allows cookies to be sent with the request
+    headers: {
+        'Content-Type': 'application/json',
+    },
+})
 
 export default function RecipeDetail({ recipeProp }) {
     const recipe = recipeProp
     const [ingredients, setIngredients] = useState([])
 
     useEffect(() => {
-        fetch(`/getIngredientByDishId?dishId=${recipe.id}`).then(
-            response => response.json()
-        ).then(
-            data => {
-                setIngredients(data)
-            }
-        )
+        // fetch(`/getIngredientByDishId?dishId=${recipe.id}`).then(
+        //     response => response.json()
+        // ).then(
+        //     data => {
+        //         setIngredients(data)
+        //     }
+        // )
+        api.get(`/getIngredientByDishId?dishId=${recipe.id}`)
+            .then(res => {
+                setIngredients(res.data)
+            })
     }, [])
 
     return (

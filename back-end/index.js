@@ -1,6 +1,14 @@
 const express = require('express')
 const pool = require('./database')
 const app = express()
+const cors = require("cors");
+
+app.use(
+    cors({
+        credentials: true,
+        origin: ["http://localhost:4000", "http://localhost:3000", "https://god-interview-project.vercel.app"],
+    })
+);
 
 const PAGE_SIZE = 5
 

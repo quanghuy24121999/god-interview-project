@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Form, Button, Pagination, Modal } from 'react-bootstrap'
 import RecipeDetail from './RecipeDetail'
+import axios from 'axios'
+
+const url = "https://god-interview-project-back-end.vercel.app"
+// const url = "http://localhost:5000"
+const api = axios.create({
+    baseURL: url,
+    withCredentials: true, // This allows cookies to be sent with the request
+    headers: {
+        'Content-Type': 'application/json',
+    },
+})
 
 export default function ListRecipes() {
     const [recipes, setRecipes] = useState([])
@@ -16,44 +27,69 @@ export default function ListRecipes() {
     const [recipe, setRecipe] = useState({})
 
     useEffect(() => {
-        fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
-            response => response.json()
-        ).then(
-            data => {
-                setRecipes(data.data)
+        api.get(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`)
+            .then(res => {
+                setRecipes(res.data.data)
                 let arr = []
-                for (let i = 1; i < data.totalPage + 1; i++) {
+                for (let i = 1; i < res.data.totalPage + 1; i++) {
                     arr.push(i);
                 }
                 setTotalPage(arr)
-            }
-        )
+            })
     }, [page])
+
+    // useEffect(() => {
+    //     fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
+    //         response => response.json()
+    //     ).then(
+    //         data => {
+    //             setRecipes(data.data)
+    //             let arr = []
+    //             for (let i = 1; i < data.totalPage + 1; i++) {
+    //                 arr.push(i);
+    //             }
+    //             setTotalPage(arr)
+    //         }
+    //     )
+    // }, [page])
 
     function search() {
         setPage(1)
-        fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
-            response => response.json()
-        ).then(
-            data => {
-                setRecipes(data.data)
+        // fetch(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`).then(
+        //     response => response.json()
+        // ).then(
+        //     data => {
+        //         setRecipes(data.data)
+        //         let arr = []
+        //         for (let i = 1; i < data.totalPage + 1; i++) {
+        //             arr.push(i);
+        //         }
+        //         setTotalPage(arr)
+        //     }
+        // )
+        api.get(`/recipes?cuisineId=${cuisine}&ingredient=${ingredient}&page=${page}`)
+            .then(res => {
+                setRecipes(res.data.data)
                 let arr = []
-                for (let i = 1; i < data.totalPage + 1; i++) {
+                for (let i = 1; i < res.data.totalPage + 1; i++) {
                     arr.push(i);
                 }
                 setTotalPage(arr)
-            }
-        )
+            })
     }
 
     useEffect(() => {
-        fetch("/cuisines").then(
-            response => response.json()
-        ).then(
-            data => {
-                setCuisines(data)
-            }
-        )
+        // fetch("/cuisines").then(
+        //     response => response.json()
+        // ).then(
+        //     data => {
+        //         setCuisines(data)
+        //     }
+        // )
+        api.get(`/cuisines`)
+            .then(res => {
+                setCuisines(res.data)
+            })
     }, [])
 
     return (
