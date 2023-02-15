@@ -38,13 +38,6 @@ export default function ListRecipes() {
     }
 
     useEffect(() => {
-        // fetch("/cuisines").then(
-        //     response => response.json()
-        // ).then(
-        //     data => {
-        //         setCuisines(data)
-        //     }
-        // )
         api.get(`/cuisines`)
             .then(res => {
                 setCuisines(res.data)
